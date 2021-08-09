@@ -1,0 +1,88 @@
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>SBS</title>
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/vendor/jquery-ui/jquery-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/opensans/opensans.css" />
+    <link rel="stylesheet" type="text/css" href="/css/icomoon/styles.css" />
+    <link rel="stylesheet" type="text/css" href="/css/fontawesome/styles.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/drawer.css" />
+    <link rel="stylesheet" type="text/css" href="/css/panel.css" />
+
+    <script type="text/javascript" src="/vendor/jquery/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/vendor/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/vkData.js"></script>
+    <script type="text/javascript" src="/panel/panel.js"></script>
+</head>
+<body>
+    <div id="page">
+        <header class="clearfix">
+            <div class="col-xs-6 logo">
+                <img src="/img/bell-128.png" />
+                <h1>Sipariş Bildirimi</h1>
+                <small>powered by vikaon</small>
+            </div>
+            <div class="col-xs-6 text-right">
+                <button type="button" class="btn btn-sm btn-danger hide" id="stopButton" style="padding-left: 5px; padding-right: 5px;"><i class="icon-pause2"></i></button> 
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#vkSetupPrefences"><i class="icon-equalizer"></i></button>
+            </div>
+        </header>
+        <section id="sectionAlertContainer" class="section-alert hide">
+            <div class="content hide no-licence">
+                <div>
+                    <p style="display: block; padding-bottom: 20px;">Lisans numarası henüz girilmemiş</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#vkSetupPrefences"> AYARLARI TAMAMLA </button>
+                </div>
+            </div>
+            <div class="content hide no-connect">
+                <div>
+                    <p style="display: block; padding-bottom: 20px;">soket bağlantısı yok</p>
+                    <button type="button" class="btn btn-primary" id="reTryConnectBtn"> TEKRAR DENE </button>
+                </div>
+            </div>
+            <div class="content hide no-data">
+                <div><p>Son baktığınızdan bu yana yeni sipariş bildirilmedi.</p></div>
+            </div>
+        </section>
+        <section id="pageContainer" class="page-container hide">
+        </section>
+    </div>
+
+    <div class="modal right fade" id="vkSetupPrefences" tabindex="-1" role="dialog" aria-labelledby="vkSetupPrefences">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ayarlar</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Lisans Key</label>
+                        <input type="text" class="form-control vk-data-control" name="LICENCE" data-key="LICENCE" />
+                    </div>
+                    <div class="form-group">
+                        <label>Alarm</label>
+                        <div id="alarmVoiceContainer" class="vselect-container"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ses Seviyesi</label>
+                        <div class="ui-volume-control"></div>
+                        <input type="hidden" class="vk-data-control" name="VOLUME" data-key="VOLUME" value="100" />
+                    </div>
+                    <div class="radio-group">
+                        <label>
+                            <input value="1" name="REPEAT" type="checkbox" class="_checkbox field-REPEAT">
+                            <span class="lbl">Tekrarla</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer no-padding" style="position: absolute; bottom:0; left:0; right: 0">
+                    <button type="submit" class="btn btn-primary btn-block">KAYDET</button>
+                </div>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div>
+</body>
+</html>
