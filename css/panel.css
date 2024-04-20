@@ -59,7 +59,7 @@ header{
     color: #5da5d4;
 }
 
-#vkSetupPrefences .modal-content{
+#vkSetupPrefences{
     color: #000;
 }
 
@@ -70,7 +70,7 @@ header{
 }
 
 .section-alert, .page-container{
-    height: 330px;
+    height: 480px;
     overflow: auto;
 }
 .section-alert .content{
@@ -171,4 +171,125 @@ input._checkbox:disabled+.lbl::before{
     font-size: 12px;
     padding : 8px;
     border-bottom: 1px solid #dedede;
+}
+#pageContainer .item-ticket{
+}
+#pageContainer .item p{
+    margin: 0;
+    padding: 0;
+}
+#pageContainer .xtitle{
+    font-weight: bold;
+}
+#pageContainer .xtitle .dt{
+    float:right;
+    font-style: italic;
+}
+.select2-container{
+    color: #000;
+}
+
+/*attribute*/
+.attribute{
+    position:relative;
+    background: #fff;
+    /*color:#ee5b28;*/
+    display: table;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.attribute .attribute-name{
+    display: table-cell;
+    width: 100%;
+    white-space: nowrap;
+    vertical-align: top;
+}
+.attribute-option{
+    background:#fff;
+    color:#8d131e;
+    border-top:1px solid #e0e2e5;
+    padding:10px 15px;
+    margin:0;
+    font-size:12px;
+    cursor:pointer;
+}
+.attribute-option:hover{
+    border-top:1px solid #000;
+    border-bottom: 1px solid #000;
+    background: #f7f7f7;
+}
+.attribute-option:hover + .attribute-option{
+    border-top:0;
+}
+.attribute .selected{
+    background:#f7f7f7;
+}
+
+.attribute-option-img{
+    display: block;
+    float: left;
+    width: 16px;
+    height: 16px;
+    border-radius: 100%;
+    border:1px solid #babcbc;
+    margin-right: 8px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.attribute.open .btn{
+    border-bottom: 0;
+}
+.dropdown-menu-attr{
+    width: 100%;
+    padding: 0;
+    border: 1px solid #0c1214;
+    border-top:0;
+}
+.dropdown-menu-top.dropdown-menu-attr{
+    border-top: 1px solid #0c1214;
+}
+.dropdown-menu-top.dropdown-menu-attr .attribute-option:last-child:hover{
+    border-bottom: 0;
+}
+.dropdown-menu-top.dropdown-menu-attr .attribute-option:first-child:hover{
+    border-top: 0;
+}
+
+.alarms-container .attribute-name .selected-name{
+    display: block;
+    font-size: 11px;
+}
+.alarms-container .attribute .attribute-name{
+    line-height: 1.3;
+    height: 40px;
+}
+.alarms-container .attribute .dropdown-menu-attr{
+    max-height: 120px;
+    overflow: auto;
+}
+.alarms-container .attribute-option{
+    position: relative;
+}
+.alarms-container .xplayer{
+    position: absolute;
+    top: 12px;
+    right: 6px;
+    text-align: center;
+    border:0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    font-size: 26px;
+    color: #5de066;
+}
+.alarms-container .attribute-name .xplayer{
+    right: 26px;
+}
+.alarms-container .btn-select:before{
+    top:0;
+    line-height: 40px;
+}
+.alarms-container .attribute{
+    margin-bottom: 2px;
 }

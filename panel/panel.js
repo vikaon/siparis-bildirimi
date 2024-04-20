@@ -8,6 +8,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 });
 
 var _alarmControl = {
+    alarms : [
+        {"id": "order", "text": "Yeni Sipariş"},
+        {"id": "orderCancel", "text": "Sipariş İptal Bildirimi"},
+        {"id": "orderReturn", "text": "Sipariş İade Bildirimi"},
+        {"id": "ticket", "text": "Yeni Destek Talebi"},
+        {"id": "customer", "text": "Yeni Üye"},
+    ],
     list : [
         {name: "netflix",           time: "3sn",  path: "/voice/ns.mp3"},
         {name: "tone",              time: "1sn",  path: "/voice/mixkit-alarm-tone-996.wav"},
@@ -33,6 +40,14 @@ var _alarmControl = {
         {name: "buzzer warning",    time: "8sn",  path: "/voice/mixkit-warning-alarm-buzzer-991.wav"}
     ],
     audio : null,
+    alarmIndis : function(id){
+        for(var i in this.alarms){
+            if(this.alarms[i].id == id){
+                return i;
+            }
+        }
+        return null;
+    },
     get : function(path){
         for(var i in this.list){
             if(this.list[i].path == path){
@@ -111,7 +126,63 @@ var _alarmControl = {
             }
         });
     },
-    bind : function(){},
+    render_ : function(){
+        var that = this;
+        $.each(that.alarms, function(i, item){
+            var xtem = vkData.get("VOICES") || {};
+            var ytem = xtem[item.id] || {};
+            var _tem = that.get(ytem.voice || "/voice/ns.mp3");
+            that.alarms[i].sp = _tem.path;
+            var ht = '<div class="clearfix attribute xalarm-control" data-id="'+item.id+'">';
+            ht += '<button class="btn dropdown-toggle btn-select attribute-name" data-toggle="dropdown">'+
+                    item.text+' <span class="selected-name">'+_tem.name+'</span> '+
+                    '</button>';
+            ht += '<div class="dropdown-menu dropdown-menu-attr">';
+            $.each(that.list, function(i, atem){
+                ht += '<div class="attribute-option" data-path="'+atem.path+'">'+
+                            atem.name + ' ' + atem.time + 
+                            '<button type="button" class="xplayer"><i class="icon-play"></i></button>'+
+                        '</div>';
+            });
+            ht += '</div>';
+            ht += '</div>';
+            $(".alarms-container").append(ht);
+        });
+        
+        $(document).on("click", ".alarms-container .xplayer", function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var item = that.get($(this).parents(".attribute-option").attr("data-path")), _this = this;
+            if($(this).data("playing") == 1){
+                that.audio.pause();
+                $(this).data("playing", 0);
+                $("i", $(this)).removeClass("icon-stop").addClass("icon-play");
+            }
+            else {
+                $("i", $(this)).removeClass("icon-play").addClass("icon-stop");
+                $(this).data("playing", 1);
+                that.audio = new Audio(item.path);
+                that.audio.onended = function(){
+                    $(_this).data("playing", 0);
+                    $("i", $(_this)).removeClass("icon-stop").addClass("icon-play");
+                };
+                that.audio.play();
+            }
+        });
+        
+        $(document).on("click", ".alarms-container .attribute-option", function(e){
+            var c = $(this).parents(".xalarm-control");
+            var i = $(c).attr("data-id");
+            var _tem = that.get($(this).attr("data-path"));
+            var _adx = that.alarmIndis(i);
+            that.alarms[_adx].sp = _tem.path;
+            $(".selected-name", c).html(_tem.name);
+        });
+    },
+    bind : function(){
+        this.render();
+        this.render_();
+    },
 };
 
 
@@ -119,7 +190,7 @@ var _listData = [];
 var contactPopup = {
     sendMessage : function(msg){
         try{
-            chrome.extension.sendMessage(msg, function(resp) {
+            chrome.runtime.sendMessage(msg, function(resp) {
                 console.log(JSON.stringify(resp));
             });
         } catch(err){
@@ -128,6 +199,9 @@ var contactPopup = {
     },
     action : function(request, sendResponse){
         switch(request.action){
+            case "loadStore" : 
+                contactPopup.sendMessage({"action": "loadStore", "data": vkData.data, "request": request});
+                return;
             case "reLoadSection" : loadSectionContainer(); break;
             case "reLoadData"    : loadSectionContainer(); break;
             case "addData"       : 
@@ -141,6 +215,7 @@ var contactPopup = {
 };
 var reTryConnect = function(){
     contactPopup.sendMessage({action: "reConnectWS"});
+    vkData._del("pref.stopped");
 };
 var loadSetupPrefences = function(){
     var valu;
@@ -177,12 +252,58 @@ var loadSectionContainer = function(){
         $("#stopButton").removeClass("hide").show();
     }
 };
-var renderMessageList_ = function(item){
-    var ht = '<div class="item"> ' + 
-                '<b>'+item.order_number+'</b> <small>'+item.date_create+'</small> <br>' +
-                '<p>'+item.deliveryAddress.full_name+' <i>'+item.deliveryAddress.district+' '+item.deliveryAddress.town+' / '+item.deliveryAddress.city+'</i></p>' +
+
+var renderMessageList_order = function(item, abs){
+    var ht = '<div class="item item-order"> ' + 
+                '<div class="xtitle"><small class="dt">'+abs.date+'</small>Yeni Sipariş - '+item.summary.orderNumber+'</div>' +
+                '<div>'+item.customer.deliveryAddress.fullName+
+                        ' <i>'+ item.customer.deliveryAddress.town+' / '+item.customer.deliveryAddress.city+'</i></div>' +
             '</div>';
     $("#pageContainer").prepend(ht);
+};
+var renderMessageList_orderCancel = function(item, abs){
+    var ht = '<div class="item item-order"> ' + 
+                '<div class="xtitle"><small class="dt">'+abs.date+'</small>Sipariş İptal Talebi- '+item.order_number+'</div>' +
+                '<div><i>'+ (item.customer ? (item.customer.first_name+' '+item.customer.last_name) : '')+'</i></div>' +
+                '<div>'+(item.options ? (item.options.note || "") : '')+'</div>'+
+            '</div>';
+    $("#pageContainer").prepend(ht);
+};
+var renderMessageList_orderReturn = function(item, abs){
+    var ht = '<div class="item item-order"> ' + 
+                '<div class="xtitle"><small class="dt">'+abs.date+'</small>Sipariş İade Talebi- '+item.order.order_number+'</div>' +
+                '<div><i>'+ (item.customer_name || '')+'</i></div>' +
+                '<div>'+(item.description)+'</div>'+
+            '</div>';
+    $("#pageContainer").prepend(ht);
+};
+var renderMessageList_ticket = function(item, abs){
+    var ht = '<div class="item item-ticket"> ' + 
+                '<div class="xtitle"><small class="dt">'+abs.date+'</small>Yeni Destek Talebi - '+item.subject+'</div>' +
+                '<div>'+item.customer_name + '</div><div>' + item.customer_email + ' ' + item.customer_phone + '</div>' +
+            '</div>';
+    $("#pageContainer").prepend(ht);
+};
+var renderMessageList_customer = function(item, abs){
+    var ht = '<div class="item item-customer"> ' + 
+                '<div class="xtitle"><small class="dt">'+abs.date+'</small>Yeni Üye - '+item.first_name+' '+item.last_name+'</div>' +
+                '<div>' + item.email + ' ' + item.mobile_phone + '</div>' +
+            '</div>';
+    $("#pageContainer").prepend(ht);
+};
+var renderMessageList_ = function(item){
+    switch(item.type){
+        case 'order' :
+            return renderMessageList_order(item.data, item);
+        case 'ticket' :
+            return renderMessageList_ticket(item.data, item);
+        case 'orderCancel' :
+            return renderMessageList_orderCancel(item.data, item);
+        case 'orderReturn' :
+            return renderMessageList_orderReturn(item.data, item);
+        case 'customer' :
+            return renderMessageList_customer(item.data, item);
+    }
 };
 var renderMessageList = function(){
     for(var i in _listData){
@@ -196,10 +317,14 @@ var saveSetupPrefences = function(){
     $.each($("#vkSetupPrefences .vk-data-control"), function(){
         xData[$(this).attr("data-key")] = $(this).val();
     });
-    xData.VOICE  = $("#alarmVoiceContainer .primary").attr("data-path");
+    xData.VOICES = {};
     xData.REPEAT = $("#vkSetupPrefences .field-REPEAT").prop("checked") ? 1 : 0;
+    $.each(_alarmControl.alarms, function(i, item){
+        xData.VOICES[item.id] = {voice: item.sp};
+    });
     vkData.set(xData);
     contactPopup.sendMessage({action: "setConf", data: xData});
+    contactPopup.sendMessage({action: "setVKData", data: vkData.data});
     loadSectionContainer();
     $("#vkSetupPrefences").modal("hide");
     reTryConnect();
@@ -209,7 +334,7 @@ var afterReady = function(){
     loadSetupPrefences();
     loadSectionContainer();
     renderMessageList();
-    _alarmControl.render();
+    _alarmControl.bind();
     $("#vkSetupPrefences button[type=submit]").click(function(e){
         e.preventDefault();
         saveSetupPrefences();
@@ -218,6 +343,7 @@ var afterReady = function(){
         reTryConnect();
     });
     $("#stopButton").click(function(e){
+        vkData._set("pref.stopped", "1");
         contactPopup.sendMessage({action: "disConnectWS"});
     });
     $("#vkSetupPrefences .ui-volume-control").slider({

@@ -25,7 +25,7 @@ var vkData = {
         else {
             this.data[key] = val;
         }
-        localStorage.setItem("S_CONF", JSON.stringify(this.data));
+        this._set("S_CONF", JSON.stringify(this.data));
     },
     get : function(key){
         if(key){
@@ -37,6 +37,7 @@ var vkData = {
         if(this.data[key]){
             delete this.data[key];
         }
+        this._set("S_CONF", JSON.stringify(this.data));
     },
     init : function(){
         this.data = {};

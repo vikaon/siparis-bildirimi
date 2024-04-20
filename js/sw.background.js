@@ -1,3 +1,70 @@
+//TODO
+// manifest.version 3 için localStorage erişimi yok
+
+var vkData = {
+    data : {},
+    _set : function(key, val){
+        localStorage.setItem(key, val);
+    },
+    _get : function(key){
+        console.log("key", key);
+        console.log("chrome.storage.local", chrome.storage.local);
+        console.log("chrome.storage.local", chrome.storage.local.get(key));
+        chrome.storage.local.get(key, (data) => {
+            if(chrome.runtime.lastError) {
+                console.error(chrome.runtime.lastError.message);
+            } else {
+                const value = data;
+                console.log("Data retrieved from chrome.storage.local:", value);
+            }
+        });
+        return localStorage.getItem(key);
+    },
+    _del : function(key){
+        localStorage.removeItem(key);
+    },
+    _parse : function(key, d){
+        var x = d;
+        try{
+            x = JSON.parse(this._get(key));
+        }catch(err){}
+        return x;
+    },
+    set : function(key, val){
+        if(typeof key == "object"){
+            for(var i in key){
+                this.data[i] = key[i];
+            }
+        }
+        else {
+            this.data[key] = val;
+        }
+        this._set("S_CONF", JSON.stringify(this.data));
+        console.log("bu nedir yaw");
+    },
+    get : function(key){
+        if(key){
+            return typeof this.data[key] != "undefined" ? this.data[key] : null;
+        }
+        return this.data;
+    },
+    del : function(key){
+        if(this.data[key]){
+            delete this.data[key];
+        }
+        this._set("S_CONF", JSON.stringify(this.data));
+    },
+    init : function(){
+        this.data = {};
+        try{
+            this.data = JSON.parse(localStorage.getItem("S_CONF")) || {};
+        } catch(err){}
+    }
+};
+vkData.init();
+
+//////////////////////////////////////////////
+
 
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     if(sender && sender.id && sender.id == chrome.runtime.id && request && request.action){
@@ -15,7 +82,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 var contactPopup = {
     sendMessage : function(msg){
         try{
-            chrome.extension.sendMessage(msg, function(resp) {});
+            chrome.runtime.sendMessage(msg, function(resp) {});
         } catch(err){}
     },
     reConnectWS : function(request, sendResponse){
@@ -37,6 +104,9 @@ var contactPopup = {
                 vkAlarm.stop();
                 sendResponse({"success" : true});
                 break;
+            case "setVKData" :
+                vkSocket.store = request.data;
+                break;
             case "setConf" :
                 if(request.data){
                     for(var i in request.data){
@@ -54,6 +124,18 @@ var contactPopup = {
             case "stopAlarm" : 
                 vkAlarm.stop();
                 sendResponse({"success" : true});
+                break;
+            case "loadStore" : 
+                console.log("loadStore", request);
+                vkSocket.store = request.data || {};
+                if(request.data && request.data.S_CONF){
+                    for(var i in request.data.S_CONF){
+                        vkSocket.sConf[i] = request.data.S_CONF[i];
+                    }
+                }
+                if(request.request && request.request.fn){
+                    request.request.fn();
+                }
                 break;
         }
     }
@@ -112,6 +194,7 @@ var vkSocket = {
     socket : null,
     data : [],
     sConf : {},
+    store : {},
     ws_uri : "ws://68.183.214.193:3003",//ws://localhost:3003",
     wsTryCounter : 0,
     wsConnecting : null,
@@ -206,12 +289,13 @@ var vkSocket = {
         };
     },
     setIcon : function(){
-        chrome.browserAction.setIcon({path: "/img/bell-16.png"});
+        return;
+        chrome.browserAction.setIcon({path: "img/bell-16.png"});
         chrome.browserAction.setBadgeText({text: ""});
         chrome.browserAction.setBadgeBackgroundColor({color: "#6bb933"});
         chrome.browserAction.setTitle({title: ""});
         if(this.socket == null){
-            chrome.browserAction.setIcon({path: "/img/bell-x-16.png"});
+            chrome.browserAction.setIcon({path: "img/bell-x-16.png"});
             chrome.browserAction.setBadgeText({text: "x"});
             chrome.browserAction.setBadgeBackgroundColor({color: "#ff0000"});
             chrome.browserAction.setTitle({title: "bağlantı yok"});
@@ -232,12 +316,13 @@ var vkSocket = {
         }
     },
     bind : function(){
-        vkSocket.sConf = {};
-        try{
-            vkSocket.sConf = JSON.parse(vkData._get("S_CONF")) || {};
-        } catch(err){}
-        this.init();
-        
+//        vkSocket.sConf = {};
+//        try{
+//            vkSocket.sConf = JSON.parse(vkData._get("S_CONF")) || {};
+//        } catch(err){}
+//        this.init();
+        console.log("bind");
+        contactPopup.sendMessage({"action": "loadStore", "fn": vkSocket.init});
     },
     init : function(){
         if(this.sConf.LICENCE){

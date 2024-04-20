@@ -9,9 +9,9 @@
          "38": "img/bell-32.png"
       },
       "default_popup": "panel/index.html",
-      "default_title": "Sipariş Bildirimi"
+      "default_title": "Site Uyarıları - vikaon"
    },
-   "description": "Sitenize gelen yeni siparişler için uyarı verir. Alarm, ses seviyesi, tekrarlama özeliklerini ayarlayabilirsiniz.",
+   "description": "Sitenize gelen yeni sipariş, yeni mesaj, yeni üye vs için uyarı verir. Alarm, ses seviyesi, tekrarlama özeliklerini ayarlayabilirsiniz.",
    "homepage_url": "https://www.vikaon.com.com/",
    "icons": {
       "128": "img/bell-128.png",
@@ -19,7 +19,7 @@
       "48": "img/bell-64.png"
    },
    "manifest_version": 2,
-   "name": "Sipariş Bildirimi",
+   "name": "Site Uyarıları - vikaon",
    "permissions": [ "tabs", "\u003Call_urls>", "cookies", "alarms", "notifications", "clipboardWrite", "webRequest", "webRequestBlocking", "storage" ],
-   "version": "1.0.0"
+   "version": "2.5.0"
 }
