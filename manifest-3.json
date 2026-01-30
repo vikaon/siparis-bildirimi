@@ -1,24 +1,38 @@
 {
     "manifest_version": 3,
-    "version": "2.5.0",
     "name": "Site Uyarıları - vikaon",
-    "background": {
-        "service_worker": "/js/sw.background.js"
-    },
-    "action": {
-        "default_popup": "panel/index.html",
-        "default_title": "Site Uyarıları - vikaon",
-        "icon": {
-            "19": "img/bell-16.png",
-            "38": "img/bell-32.png"
-        }
-    },
+    "version": "3.0.0",
     "description": "Sitenize gelen yeni sipariş, yeni mesaj, yeni üye vs için uyarı verir. Alarm, ses seviyesi, tekrarlama özeliklerini ayarlayabilirsiniz.",
-    "homepage_url": "https://www.vikaon.com.com/",
+    "homepage_url": "https://www.vikaon.com/",
     "icons": {
         "128": "img/bell-128.png",
-        "48": "img/bell-64.png",
-        "16": "img/bell-16.png"
+        "16": "img/bell-16.png",
+        "48": "img/bell-64.png"
     },
-    "permissions": [ "tabs", "cookies", "alarms", "notifications", "clipboardWrite", "webRequest", "storage" ]
+    "action": {
+        "default_icon": {
+            "19": "img/bell-16.png",
+            "38": "img/bell-32.png"
+        },
+        "default_popup": "panel/index.html",
+        "default_title": "Site Uyarıları - vikaon"
+    },
+    "background": {
+        "service_worker": "js/v3/bg/background.js",
+        "type": "module"
+    },
+    "permissions": [
+        "tabs",
+        "cookies",
+        "alarms",
+        "notifications",
+        "clipboardWrite",
+        "storage",
+        "webRequest",
+        "scripting",
+        "offscreen"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ]
 }

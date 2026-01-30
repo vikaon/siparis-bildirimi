@@ -1,0 +1,25 @@
+{
+  "background": {
+    "scripts": ["/js/vkData.js", "/js/vkSocket.js" ],
+    "persistent" : true
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "img/bell-16.png",
+      "38": "img/bell-32.png"
+    },
+    "default_popup": "panel/index.html",
+    "default_title": "Site Uyarıları - vikaon"
+  },
+  "description": "Sitenize gelen yeni sipariş, yeni mesaj, yeni üye vs için uyarı verir. Alarm, ses seviyesi, tekrarlama özeliklerini ayarlayabilirsiniz.",
+  "homepage_url": "https://www.vikaon.com/",
+  "icons": {
+    "128": "img/bell-128.png",
+    "16": "img/bell-16.png",
+    "48": "img/bell-64.png"
+  },
+  "manifest_version": 2,
+  "name": "Site Uyarıları - vikaon",
+  "permissions": [ "tabs", "\u003Call_urls>", "cookies", "alarms", "notifications", "clipboardWrite", "webRequest", "webRequestBlocking", "storage" ],
+  "version": "2.5.0"
+}
