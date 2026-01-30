@@ -2,8 +2,8 @@ const vkSocket = {
     socket : null,
     data : [],
     sConf : {},
-//    ws_uri : "ws://68.183.214.193:3003",TODO
-    ws_uri : "ws://localhost:3003",
+    ws_uri : "ws://68.183.214.193:3003",
+    //ws_uri : "ws://localhost:3003",
     wsTryCounter : 0,
     wsConnecting : null,
     badgeTimer : null,
